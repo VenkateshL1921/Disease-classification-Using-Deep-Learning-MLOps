@@ -1,10 +1,10 @@
 import os
 from classifier.constants import *
-from classifier.utils.common import read_yaml, create_directories
+from classifier.utils.common import read_yaml, create_directories, save_json
 from classifier.entity.config_entity import DataIngestionConfig
 from classifier.entity.config_entity import PrepareBaseModelConfig
 from classifier.entity.config_entity import TrainingConfig
-
+from classifier.entity.config_entity import EvaluationConfig
 
 class ConfigurationManager:
     def __init__(
@@ -53,17 +53,6 @@ class ConfigurationManager:
         return prepare_base_model_config
 
 
-    
-    def __init__(
-        self,
-        config_filepath = CONFIG_FILE_PATH,
-        params_filepath = PARAMS_FILE_PATH):
-
-        self.config = read_yaml(config_filepath)
-        self.params = read_yaml(params_filepath)
-
-        create_directories([self.config.artifacts_root])
-
 
     
     def get_training_config(self) -> TrainingConfig:
@@ -87,3 +76,15 @@ class ConfigurationManager:
         )
 
         return training_config
+    
+
+    def get_evaluation_config(self) -> EvaluationConfig:
+        eval_config = EvaluationConfig(
+            path_of_model="artifacts/training/model.h5",
+            training_data="artifacts/data_ingestion/kidney scans",
+            mlflow_uri="https://dagshub.com/venkyslotlikar19/Disease-classification-Using-Deep-Learning-MLOps.mlflow",
+            all_params=self.params,
+            params_image_size=self.params.IMAGE_SIZE,
+            params_batch_size=self.params.BATCH_SIZE
+        )
+        return eval_config
